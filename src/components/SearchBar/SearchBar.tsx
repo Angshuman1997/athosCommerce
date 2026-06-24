@@ -11,16 +11,28 @@ const SearchBar = ({
 }: SearchBarProps) => {
   return (
     <TextField
-      fullWidth
+      size="small"
       placeholder="Search products..."
       aria-label="Search products"
       value={value}
       onChange={(e) =>
         onChange(e.target.value)
       }
+      sx={{
+        width: "100%",
+        maxWidth: "20rem",
+      }}
       slotProps={{
         input: {
           "aria-label": "Search products",
+          sx: {
+            backgroundColor: "#ffffff",
+            borderRadius: "0.2rem",
+            "& input": {
+              paddingTop: "0.25rem",
+              paddingBottom: "0.25rem",
+            },
+          },
         },
       }}
     />

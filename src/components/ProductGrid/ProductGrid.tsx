@@ -15,12 +15,12 @@ const ProductGrid = ({ products }: Props) => {
         display: "grid",
         gridTemplateColumns: {
           xs: "repeat(2, 1fr)",
-          sm: "repeat(2, 1fr)",
-          md: "repeat(3, 1fr)",
-          lg: "repeat(4, 1fr)",
+          sm: "repeat(3, 1fr)",
+          md: "repeat(4, 1fr)",
+          lg: "repeat(6, 1fr)",
+          xl: "repeat(8, 1fr)",
         },
-
-        gap: 3,
+        gap: 2,
       }}
     >
       {products.map((product) => (

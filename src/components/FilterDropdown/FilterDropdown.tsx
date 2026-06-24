@@ -5,6 +5,7 @@ import {
   MenuItem,
   Checkbox,
   ListItemText,
+  type SelectChangeEvent,
 } from "@mui/material";
 
 interface Option {
@@ -20,27 +21,39 @@ interface Props {
 }
 
 const FilterDropdown = ({ label, value, options, onChange }: Props) => {
+  const labelId = `${label.toLowerCase().replace(/\s+/g, "-")}-label`;
+
+  const handleSelectChange = (event: SelectChangeEvent<string[]>) => {
+    const {
+      target: { value: eventValue },
+    } = event;
+    
+    onChange(
+      typeof eventValue === "string" ? eventValue.split(",") : eventValue
+    );
+  };
+
+  const getRenderValue = (selectedValues: string[]) => {
+    return selectedValues
+      .map((val) => options.find((opt) => opt.value === val)?.label || val)
+      .join(", ");
+  };
+
   return (
     <FormControl size="small" fullWidth>
-      <InputLabel>{label}</InputLabel>
+      <InputLabel id={labelId}>{label}</InputLabel>
 
       <Select
         multiple
+        labelId={labelId}
         value={value}
         label={label}
-        renderValue={(selected) => selected.join(", ")}
-        onChange={(e) =>
-          onChange(
-            typeof e.target.value === "string"
-              ? e.target.value.split(",")
-              : e.target.value,
-          )
-        }
+        renderValue={getRenderValue}
+        onChange={handleSelectChange}
       >
         {options.map((option) => (
           <MenuItem key={option.value} value={option.value}>
-            <Checkbox checked={value.includes(option.value)} />
-
+            <Checkbox size="small" checked={value.includes(option.value)} />
             <ListItemText primary={option.label} />
           </MenuItem>
         ))}

@@ -35,7 +35,18 @@ const FilterChips = ({
 
       {color && <Chip label={`Color: ${color}`} onDelete={onRemoveColor} />}
 
-      <Button size="small" color="error" onClick={onClearAll}>
+      <Button
+        size="small"
+        color="inherit"
+        onClick={onClearAll}
+        sx={{
+          fontWeight: 700,
+          color: "text.primary",
+          "&:hover": {
+            backgroundColor: "action.hover",
+          },
+        }}
+      >
         Clear All
       </Button>
     </Box>

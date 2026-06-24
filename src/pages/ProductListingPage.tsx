@@ -5,24 +5,23 @@ import {
   Box,
   LinearProgress,
   Alert,
-  Button,
-  Collapse,
-  useMediaQuery,
-  useTheme,
+  IconButton,
 } from "@mui/material";
+
+import MenuIcon from "@mui/icons-material/Menu";
 
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { useDebounce } from "../hooks/useDebounce";
 
 import SearchBar from "../components/SearchBar/SearchBar";
 import ProductGrid from "../components/ProductGrid/ProductGrid";
-import SortDropdown from "../components/SortDropdown/SortDropdown";
-import FilterDropdown from "../components/FilterDropdown/FilterDropdown";
 import FilterChips from "../components/FilterChips/FilterChips";
 import PaginationControls from "../components/PaginationControls/PaginationControls";
+import Logo from "../components/Logo/Logo";
 
 import { useUrlState } from "../hooks/useUrlState";
 import { fetchProducts } from "../redux/productSlice";
+import FilterDrawer from "../components/FilterDrawer/FilterDrawer";
 
 const ProductListingPage = () => {
   const dispatch = useAppDispatch();
@@ -37,12 +36,7 @@ const ProductListingPage = () => {
   } = useUrlState();
 
   const [searchTerm, setSearchTerm] = useState(() => urlQuery);
-
-  const [showFilters, setShowFilters] = useState(false);
-
-  const theme = useTheme();
-
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const debouncedSearch = useDebounce(searchTerm, 500);
 
@@ -58,6 +52,7 @@ const ProductListingPage = () => {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setSearchTerm(urlQuery);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlQuery]);
 
   useEffect(() => {
@@ -94,9 +89,11 @@ const ProductListingPage = () => {
         height: "100dvh",
         display: "flex",
         flexDirection: "column",
+        backgroundColor: "#e2ebef",
         px: {
-          xs: 2,
-          sm: 3,
+          xs: 1,
+          sm: 2,
+          md: 3,
         },
       }}
     >
@@ -105,146 +102,64 @@ const ProductListingPage = () => {
         sx={{
           position: "sticky",
           top: 0,
-          zIndex: 1000,
-          backgroundColor: "background.paper",
+          zIndex: 1200,
+          backgroundColor: "#e2ebef",
           borderBottom: "1px solid",
           borderColor: "divider",
+          backdropFilter: "blur(8px)",
           flexShrink: 0,
         }}
       >
         <Box sx={{ py: 2 }}>
-          <Typography
-            variant="h4"
-            component="h1"
+          <Box
             sx={{
-              mb: 2,
-              fontWeight: 700,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
             }}
           >
-            Product Catalog
-          </Typography>
+            <Logo />
 
-          <SearchBar value={searchTerm} onChange={setSearchTerm} />
+            <SearchBar value={searchTerm} onChange={setSearchTerm} />
+          </Box>
 
-          {isMobile ? (
-            <Box sx={{ mt: 2 }}>
-              <Button
-                fullWidth
-                variant="outlined"
-                onClick={() => setShowFilters(!showFilters)}
-              >
-                {showFilters ? "✕ Close Filters" : "☰ Filters"}
-              </Button>
-
-              <Collapse in={showFilters}>
-                <Box
-                  sx={{
-                    mt: 2,
-                    display: "grid",
-                    gap: 1.5,
-                  }}
-                >
-                  <SortDropdown
-                    value={sort ?? ""}
-                    onChange={(value) =>
-                      updateParams({
-                        sort: value,
-                        page: 1,
-                      })
-                    }
-                  />
-
-                  <FilterDropdown
-                    label="Brand"
-                    value={brand ? [brand] : []}
-                    options={
-                      brandFacet?.values.map((item) => ({
-                        label: item.label,
-                        value: item.value ?? "",
-                      })) ?? []
-                    }
-                    onChange={(values) =>
-                      updateParams({
-                        brand: values[0] ?? "",
-                        page: 1,
-                      })
-                    }
-                  />
-
-                  <FilterDropdown
-                    label="Color"
-                    value={color ? [color] : []}
-                    options={
-                      colorFacet?.values.map((item) => ({
-                        label: item.label,
-                        value: item.value ?? "",
-                      })) ?? []
-                    }
-                    onChange={(values) =>
-                      updateParams({
-                        color: values[0] ?? "",
-                        page: 1,
-                      })
-                    }
-                  />
-                </Box>
-              </Collapse>
-            </Box>
-          ) : (
-            <Box
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%",
+              mt: 1,
+            }}
+          >
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              aria-live="polite"
               sx={{
-                mt: 2,
-                display: "grid",
-                gridTemplateColumns: "repeat(3, 1fr)",
-                gap: 2,
+                fontWeight: 500,
+                letterSpacing: "0.025em",
               }}
             >
-              <SortDropdown
-                value={sort ?? ""}
-                onChange={(value) =>
-                  updateParams({
-                    sort: value,
-                    page: 1,
-                  })
-                }
-              />
-
-              <FilterDropdown
-                label="Brand"
-                value={brand ? [brand] : []}
-                options={
-                  brandFacet?.values.map((item) => ({
-                    label: item.label,
-                    value: item.value ?? "",
-                  })) ?? []
-                }
-                onChange={(values) =>
-                  updateParams({
-                    brand: values[0] ?? "",
-                    page: 1,
-                  })
-                }
-              />
-
-              <FilterDropdown
-                label="Color"
-                value={color ? [color] : []}
-                options={
-                  colorFacet?.values.map((item) => ({
-                    label: item.label,
-                    value: item.value ?? "",
-                  })) ?? []
-                }
-                onChange={(values) =>
-                  updateParams({
-                    color: values[0] ?? "",
-                    page: 1,
-                  })
-                }
-              />
-            </Box>
-          )}
-
+              Total: <strong>{totalResults.toLocaleString()}</strong>
+            </Typography>
+            <PaginationControls
+              page={urlPage}
+              totalPages={totalPages}
+              onPageChange={(page) =>
+                updateParams({
+                  page,
+                })
+              }
+            />
+            <IconButton
+              onClick={() => setFiltersOpen(true)}
+              aria-label="Open filters"
+            >
+              <MenuIcon />
+            </IconButton>
+          </Box>
           <FilterChips
             brand={brand}
             color={color}
@@ -268,18 +183,42 @@ const ProductListingPage = () => {
               })
             }
           />
-
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{
-              mt: 1,
-            }}
-            aria-live="polite"
-          >
-            {totalResults} products found
-          </Typography>
         </Box>
+
+        <FilterDrawer
+          open={filtersOpen}
+          sort={sort ?? ""}
+          brand={brand}
+          color={color}
+          brandFacet={brandFacet}
+          colorFacet={colorFacet}
+          onClose={() => setFiltersOpen(false)}
+          onSortChange={(value) => {
+            updateParams({
+              sort: value,
+              page: 1,
+            });
+          }}
+          onBrandChange={(value) => {
+            updateParams({
+              brand: value,
+              page: 1,
+            });
+          }}
+          onColorChange={(value) => {
+            updateParams({
+              color: value,
+              page: 1,
+            });
+          }}
+          onClearAll={() => {
+            updateParams({
+              brand: "",
+              color: "",
+              page: 1,
+            });
+          }}
+        />
 
         {loading && (
           <Box role="status" aria-live="polite" aria-label="Loading products">
@@ -293,7 +232,7 @@ const ProductListingPage = () => {
         sx={{
           flex: 1,
           overflowY: "auto",
-          pt: 3,
+          pt: 2,
           pb: 4,
         }}
       >
@@ -321,21 +260,12 @@ const ProductListingPage = () => {
           </Alert>
         )}
 
-        <section aria-label="Product search results">
-          <ProductGrid products={products} />
-        </section>
-
-        
+        <Box sx={{ mt: 2 }}>
+          <section aria-label="Product search results">
+            <ProductGrid products={products} />
+          </section>
+        </Box>
       </Box>
-      <PaginationControls
-          page={urlPage}
-          totalPages={totalPages}
-          onPageChange={(page) =>
-            updateParams({
-              page,
-            })
-          }
-        />
     </Container>
   );
 };
