@@ -17,6 +17,7 @@ interface ProductState {
   query: string;
   page: number;
   totalPages: number;
+  hasLoaded: boolean;
   totalResults: number;
   sortField: string;
   sortDirection: string;
@@ -35,14 +36,14 @@ const initialState: ProductState = {
   totalResults: 0,
   sortField: "",
   sortDirection: "",
+  hasLoaded: false,
   selectedFilters: {},
 };
 
-export const fetchProducts =
-  createAsyncThunk(
-    "products/fetchProducts",
-
-    async ({
+export const fetchProducts = createAsyncThunk(
+  "products/fetchProducts",
+  async (
+    {
       query,
       page,
       sort,
@@ -54,16 +55,34 @@ export const fetchProducts =
       sort?: string;
       brand?: string;
       color?: string;
-    }) => {
-      return searchProducts({
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      return await searchProducts({
         query,
         page,
         sort,
         brand,
         color,
       });
+    } catch (err) {
+      if (
+        err instanceof DOMException &&
+        err.name === "AbortError"
+      ) {
+        // Ignore aborted requests
+        return rejectWithValue("ABORTED");
+      }
+
+      return rejectWithValue(
+        err instanceof Error
+          ? err.message
+          : "Failed to load products"
+      );
     }
-  );
+  }
+);
 
 const productSlice = createSlice({
   name: "products",
@@ -157,30 +176,38 @@ const productSlice = createSlice({
         }
       )
       .addCase(
-        fetchProducts.fulfilled,
-        (state, action) => {
-          state.loading = false;
-          state.products =
-            action.payload.results;
-          state.facets =
-            action.payload.facets;
-          state.sortOptions =
-            action.payload.sorting.options;
-          state.totalPages =
-            action.payload.pagination.totalPages;
-          state.totalResults =
-            action.payload.pagination.totalResults;
-        }
-      )
+  fetchProducts.fulfilled,
+  (state, action) => {
+    state.loading = false;
+    state.hasLoaded = true;
+
+    state.products = action.payload.results;
+    state.facets = action.payload.facets;
+    state.sortOptions = action.payload.sorting.options;
+    state.totalPages =
+      action.payload.pagination.totalPages;
+    state.totalResults =
+      action.payload.pagination.totalResults;
+
+    state.error = null;
+  }
+)
       .addCase(
-        fetchProducts.rejected,
-        (state, action) => {
-          state.loading = false;
-          state.error =
-            (action.payload as string) ??
-            "Failed to load products";
-        }
-      );
+  fetchProducts.rejected,
+  (state, action) => {
+    console.log(action.error);
+    state.loading = false;
+    state.hasLoaded = true;
+
+    if (action.payload === "ABORTED") {
+    return;
+  }
+
+    state.error =
+      (action.payload as string) ??
+      "Failed to load products";
+  }
+)
   },
 });
 

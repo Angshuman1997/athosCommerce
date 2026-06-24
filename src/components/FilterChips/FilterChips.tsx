@@ -1,4 +1,6 @@
-import { Box, Chip, Button } from "@mui/material";
+import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
+import Button from "@mui/material/Button";
 
 interface Props {
   brand?: string;

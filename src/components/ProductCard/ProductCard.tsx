@@ -22,19 +22,19 @@ const ProductCard = ({ product }: Props) => {
       }}
     >
       <CardMedia
-        component="img"
-        sx={{
-          height: {
-            xs: 140,
-            sm: 180,
-            md: 250,
-          },
-          objectFit: "cover",
-        }}
-        image={image}
-        alt={product.name}
-        loading="lazy"
-      />
+  component="img"
+  image={image}
+  alt={product.name}
+  loading="lazy"
+  width="300"
+  height="400"
+  sx={{
+    width: "100%",
+    aspectRatio: "3 / 4",
+    height: "auto",
+    objectFit: "cover",
+  }}
+/>
 
       <CardContent
         sx={{

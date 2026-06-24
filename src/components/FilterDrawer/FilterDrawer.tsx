@@ -8,6 +8,7 @@ import {
   Paper,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import React from "react";
 
 import SortDropdown from "../SortDropdown/SortDropdown";
 import FilterDropdown from "../FilterDropdown/FilterDropdown";
@@ -164,4 +165,4 @@ const FilterDrawer = ({
   );
 };
 
-export default FilterDrawer;
+export default React.memo(FilterDrawer);

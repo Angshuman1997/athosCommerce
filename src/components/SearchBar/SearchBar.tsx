@@ -1,4 +1,5 @@
 import { TextField } from "@mui/material";
+import React from "react";
 
 interface SearchBarProps {
   value: string;
@@ -39,4 +40,4 @@ const SearchBar = ({
   );
 };
 
-export default SearchBar;
+export default React.memo(SearchBar);

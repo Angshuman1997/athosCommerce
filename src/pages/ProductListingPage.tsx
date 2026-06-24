@@ -1,4 +1,11 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  lazy,
+  Suspense,
+} from "react";
 import {
   Container,
   Typography,
@@ -21,7 +28,10 @@ import Logo from "../components/Logo/Logo";
 
 import { useUrlState } from "../hooks/useUrlState";
 import { fetchProducts } from "../redux/productSlice";
-import FilterDrawer from "../components/FilterDrawer/FilterDrawer";
+
+const FilterDrawer = lazy(
+  () => import("../components/FilterDrawer/FilterDrawer"),
+);
 
 const ProductListingPage = () => {
   const dispatch = useAppDispatch();
@@ -40,12 +50,25 @@ const ProductListingPage = () => {
 
   const debouncedSearch = useDebounce(searchTerm, 500);
 
-  const { products, loading, error, totalResults, totalPages, facets } =
-    useAppSelector((state) => state.products);
+  const {
+    products,
+    loading,
+    error,
+    totalResults,
+    totalPages,
+    facets,
+    hasLoaded,
+  } = useAppSelector((state) => state.products);
 
-  const brandFacet = facets.find((facet) => facet.field === "brand");
+  const brandFacet = useMemo(
+    () => facets.find((facet) => facet.field === "brand"),
+    [facets],
+  );
 
-  const colorFacet = facets.find((facet) => facet.field === "color_family");
+  const colorFacet = useMemo(
+    () => facets.find((facet) => facet.field === "color_family"),
+    [facets],
+  );
 
   useEffect(() => {
     if (urlQuery !== searchTerm) {
@@ -80,6 +103,14 @@ const ProductListingPage = () => {
       color,
     });
   }, [debouncedSearch, urlQuery, sort, brand, color, updateParams]);
+
+  const handleOpenFilters = useCallback(() => {
+    setFiltersOpen(true);
+  }, []);
+
+  const handleCloseFilters = useCallback(() => {
+    setFiltersOpen(false);
+  }, []);
 
   return (
     <Container
@@ -153,10 +184,7 @@ const ProductListingPage = () => {
                 })
               }
             />
-            <IconButton
-              onClick={() => setFiltersOpen(true)}
-              aria-label="Open filters"
-            >
+            <IconButton onClick={handleOpenFilters} aria-label="Open filters">
               <MenuIcon />
             </IconButton>
           </Box>
@@ -184,41 +212,42 @@ const ProductListingPage = () => {
             }
           />
         </Box>
-
-        <FilterDrawer
-          open={filtersOpen}
-          sort={sort ?? ""}
-          brand={brand}
-          color={color}
-          brandFacet={brandFacet}
-          colorFacet={colorFacet}
-          onClose={() => setFiltersOpen(false)}
-          onSortChange={(value) => {
-            updateParams({
-              sort: value,
-              page: 1,
-            });
-          }}
-          onBrandChange={(value) => {
-            updateParams({
-              brand: value,
-              page: 1,
-            });
-          }}
-          onColorChange={(value) => {
-            updateParams({
-              color: value,
-              page: 1,
-            });
-          }}
-          onClearAll={() => {
-            updateParams({
-              brand: "",
-              color: "",
-              page: 1,
-            });
-          }}
-        />
+        <Suspense fallback={null}>
+          <FilterDrawer
+            open={filtersOpen}
+            sort={sort ?? ""}
+            brand={brand}
+            color={color}
+            brandFacet={brandFacet}
+            colorFacet={colorFacet}
+            onClose={handleCloseFilters}
+            onSortChange={(value) => {
+              updateParams({
+                sort: value,
+                page: 1,
+              });
+            }}
+            onBrandChange={(value) => {
+              updateParams({
+                brand: value,
+                page: 1,
+              });
+            }}
+            onColorChange={(value) => {
+              updateParams({
+                color: value,
+                page: 1,
+              });
+            }}
+            onClearAll={() => {
+              updateParams({
+                brand: "",
+                color: "",
+                page: 1,
+              });
+            }}
+          />
+        </Suspense>
 
         {loading && (
           <Box role="status" aria-live="polite" aria-label="Loading products">
@@ -236,33 +265,23 @@ const ProductListingPage = () => {
           pb: 4,
         }}
       >
-        {error && (
-          <Alert
-            severity="error"
-            role="alert"
-            sx={{
-              mb: 3,
-            }}
-          >
+        {hasLoaded && !loading && error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
             {error}
           </Alert>
         )}
 
-        {!loading && products.length === 0 && (
-          <Alert
-            severity="info"
-            role="status"
-            sx={{
-              mb: 3,
-            }}
-          >
+        {hasLoaded && !loading && urlQuery !== "" && !error && products.length === 0 && (
+          <Alert severity="info" sx={{ mb: 3 }}>
             No products found. Try another search.
           </Alert>
         )}
 
         <Box sx={{ mt: 2 }}>
           <section aria-label="Product search results">
-            <ProductGrid products={products} />
+            {!loading && products.length > 0 && (
+              <ProductGrid products={products} />
+            )}
           </section>
         </Box>
       </Box>

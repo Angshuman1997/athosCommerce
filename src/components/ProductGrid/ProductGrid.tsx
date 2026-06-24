@@ -1,3 +1,4 @@
+import React from "react";
 import { Box } from "@mui/material";
 
 import ProductCard from "../ProductCard/ProductCard";
@@ -30,4 +31,4 @@ const ProductGrid = ({ products }: Props) => {
   );
 };
 
-export default ProductGrid;
+export default React.memo(ProductGrid);

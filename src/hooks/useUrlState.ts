@@ -39,7 +39,7 @@ export const useUrlState = () => {
             color,
         }: UpdateParams) => {
             const params =
-                new URLSearchParams(searchParams);
+  new URLSearchParams(window.location.search);
 
             if (q !== undefined) {
                 q
@@ -74,7 +74,7 @@ export const useUrlState = () => {
 
             setSearchParams(params);
         },
-        [searchParams, setSearchParams]
+        [setSearchParams]
     );
 
     return {

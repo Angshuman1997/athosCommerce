@@ -7,6 +7,7 @@ import {
   ListItemText,
   type SelectChangeEvent,
 } from "@mui/material";
+import React from "react";
 
 interface Option {
   label: string;
@@ -62,4 +63,4 @@ const FilterDropdown = ({ label, value, options, onChange }: Props) => {
   );
 };
 
-export default FilterDropdown;
+export default React.memo(FilterDropdown);
