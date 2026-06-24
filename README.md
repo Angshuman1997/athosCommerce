@@ -268,7 +268,7 @@ git clone https://github.com/Angshuman1997/athosCommerce.git
 Navigate to the project
 
 ```bash
-cd YOUR_REPOSITORY
+cd athosCommerce
 ```
 
 Install dependencies
