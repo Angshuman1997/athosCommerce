@@ -25,9 +25,9 @@ https://github.com/Angshuman1997/athosCommerce
 
 > Add desktop screenshot here
 
-```md
+
 <img width="1366" height="683" alt="image" src="https://github.com/user-attachments/assets/75e36208-5dc5-4c41-a609-b95a4a6757f1" />
-```
+
 
 ---
 
@@ -35,9 +35,8 @@ https://github.com/Angshuman1997/athosCommerce
 
 > Add mobile screenshot here
 
-```md
 <img width="320" height="503" alt="image" src="https://github.com/user-attachments/assets/06b5671c-a72d-422c-a9c7-5d1aa342916a" />
-```
+
 
 ---
 
@@ -45,9 +44,8 @@ https://github.com/Angshuman1997/athosCommerce
 
 > Add filter drawer screenshot here
 
-```md
+
 <img width="1344" height="610" alt="image" src="https://github.com/user-attachments/assets/a37d65c9-d9d1-4814-9d0a-a2d580aecf55" />
-```
 
 ---
 
@@ -55,9 +53,8 @@ https://github.com/Angshuman1997/athosCommerce
 
 > Add search results screenshot here
 
-```md
+
 <img width="1352" height="680" alt="image" src="https://github.com/user-attachments/assets/847a8e49-9f97-4c41-bd99-968d4589fb3c" />
-```
 
 ---
 
@@ -256,9 +253,7 @@ URL query parameters remain the single source of truth for:
 
 > Add Lighthouse screenshot here
 
-```md
 <img width="436" height="481" alt="image" src="https://github.com/user-attachments/assets/ce3b4842-9d0b-48b2-b35b-cd9d8e98f01e" />
-```
 
 ---
 
